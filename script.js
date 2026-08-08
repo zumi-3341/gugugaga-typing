@@ -1741,7 +1741,6 @@ async function startGameplayNow(sequenceId) {
   trackAnalyticsEvent("game_start", {
     difficulty: state.selectedDifficulty,
   });
-  void window.gugugagaCounter?.increment();
   stopActiveBgm();
   state.activeBgmAudio = audioCache.bgm[state.selectedDifficulty] ?? null;
   await loopAudio(state.activeBgmAudio);

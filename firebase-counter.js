@@ -28,6 +28,7 @@ const database = getFirestore(app);
 const counterReference = doc(database, "publicCounters", "totalPlays");
 const rankingCollection = collection(database, "rankings");
 const counterElement = document.querySelector("#totalPlayCount");
+const startGameButton = document.querySelector("#startGameButton");
 
 function renderCount(count) {
   if (!counterElement) {
@@ -115,5 +116,8 @@ async function submitRanking(entry) {
 
 window.gugugagaCounter = { increment, loadCount };
 window.gugugagaOnlineRanking = { load: loadRanking, submit: submitRanking };
+startGameButton?.addEventListener("click", () => {
+  void increment();
+});
 void loadCount();
 void loadRanking();
