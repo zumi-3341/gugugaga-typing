@@ -453,6 +453,7 @@ const state = {
   playerName: "",
   titleVisualMode: "image",
   rankingFilter: "all",
+  onlineRankingEntries: null,
   titleSecretTapCount: 0,
   selectedEncyclopediaDifficulty: "beginner",
   selectedEncyclopediaWord: "プリン",
@@ -885,11 +886,12 @@ function renderRankingList() {
     return;
   }
 
-  const entries = loadRankingEntries();
-  const filteredEntries =
+  const entries = state.onlineRankingEntries ?? loadRankingEntries();
+  const filteredEntries = (
     state.rankingFilter === "all"
       ? entries
-      : entries.filter((entry) => entry.difficultyKey === state.rankingFilter);
+      : entries.filter((entry) => entry.difficultyKey === state.rankingFilter)
+  ).slice(0, 30);
   container.innerHTML = "";
   if (titleElements.rankingFilterStatus) {
     titleElements.rankingFilterStatus.textContent = getRankingFilterLabel(state.rankingFilter);
@@ -951,7 +953,7 @@ function renderRankingList() {
 function recordRankingEntry() {
   const difficulty = getDifficultyData(state.selectedDifficulty);
   const entries = loadRankingEntries();
-  entries.push({
+  const entry = {
     name: getRankingPlayerName(),
     score: state.play.score,
     bonusScore: state.play.bonusScore,
@@ -959,10 +961,12 @@ function recordRankingEntry() {
     difficulty: difficulty.label,
     misses: state.play.misses,
     playedAt: Date.now(),
-  });
+  };
+  entries.push(entry);
   entries.sort(compareRankingEntries);
   saveRankingEntries(entries);
   renderRankingList();
+  void window.gugugagaOnlineRanking?.submit(entry);
 }
 
 function isUnlocked(key) {
@@ -1737,6 +1741,7 @@ async function startGameplayNow(sequenceId) {
   trackAnalyticsEvent("game_start", {
     difficulty: state.selectedDifficulty,
   });
+  void window.gugugagaCounter?.increment();
   stopActiveBgm();
   state.activeBgmAudio = audioCache.bgm[state.selectedDifficulty] ?? null;
   await loopAudio(state.activeBgmAudio);
@@ -2321,4 +2326,20 @@ setScreen("title");
 
 window.addEventListener("resize", () => {
   scheduleCurrentWordFit();
+});
+
+window.addEventListener("gugugaga-ranking-loaded", (event) => {
+  if (!Array.isArray(event.detail)) {
+    return;
+  }
+
+  state.onlineRankingEntries = event.detail
+    .map((entry) => ({
+      ...entry,
+      difficultyKey: normalizeRankingDifficultyKey(entry),
+      bonusScore: Number.isFinite(entry.bonusScore) ? entry.bonusScore : 0,
+    }))
+    .sort(compareRankingEntries)
+    .slice(0, 100);
+  renderRankingList();
 });

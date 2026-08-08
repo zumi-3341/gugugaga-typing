@@ -243,6 +243,15 @@ img {
   color: var(--ink-soft);
 }
 
+.total-play-count {
+  margin: 12px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  color: var(--accent-deep);
+  font-size: 0.96rem;
+  font-weight: 800;
+}
+
 .character-name,
 .play-mode-name,
 .stage-badge {

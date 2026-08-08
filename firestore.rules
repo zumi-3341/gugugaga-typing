@@ -1,0 +1,54 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /publicCounters/totalPlays {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly(['count'])
+        && request.resource.data.count is int
+        && request.resource.data.count == 1;
+      allow update: if request.resource.data.keys().hasOnly(['count'])
+        && resource.data.count is int
+        && request.resource.data.count is int
+        && request.resource.data.count == resource.data.count + 1;
+      allow delete: if false;
+    }
+
+    match /rankings/{rankingId} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly([
+          'name',
+          'score',
+          'bonusScore',
+          'difficultyKey',
+          'difficulty',
+          'misses',
+          'playedAt'
+        ])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 1
+        && request.resource.data.name.size() <= 20
+        && request.resource.data.score is int
+        && request.resource.data.score >= 0
+        && request.resource.data.score <= 200
+        && request.resource.data.bonusScore is int
+        && request.resource.data.bonusScore >= 0
+        && request.resource.data.bonusScore <= 10000
+        && request.resource.data.difficultyKey in [
+          'beginner',
+          'intermediate',
+          'advanced',
+          'secret_guga',
+          'secret_phrase'
+        ]
+        && request.resource.data.difficulty is string
+        && request.resource.data.difficulty.size() >= 1
+        && request.resource.data.difficulty.size() <= 30
+        && request.resource.data.misses is int
+        && request.resource.data.misses >= 0
+        && request.resource.data.misses <= 10000
+        && request.resource.data.playedAt == request.time;
+      allow update, delete: if false;
+    }
+  }
+}
