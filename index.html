@@ -1,0 +1,449 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ぐぐががちゃんと仲良くなりタイピング</title>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-G5CNS8K2VY"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        window.dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-G5CNS8K2VY");
+    </script>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app" data-screen="title">
+      <section id="titleScreen" class="screen title-screen is-active" aria-hidden="false">
+        <div class="title-layout">
+          <article class="hero-panel">
+            <h1 class="hero-title">
+              <img
+                src="./assets/images/title/kanban.png"
+                alt="ぐぐががちゃんと仲良くなりタイピング"
+              />
+            </h1>
+            <p class="hero-copy">
+              ぐぐががちゃんにプレゼントして 1分の間に仲良くなりたいタイピングゲームです。
+            </p>
+            <p class="hero-copy hero-copy-sub">
+              ①ゲーム開始前に、キーボードを <strong>半角</strong> にしてください。
+            </p>
+            <p class="hero-copy hero-copy-sub">
+              ②連続10回ミスなく入力できると、終了後に <strong>ボーナスタイム(15秒)</strong> が発生します。そこでさらに <strong>が / ga</strong> を連打して、
+              プレゼント数を一気に増やせます。追加プレゼントした数によってボーナスタイム終了後に表示されるイラストが変わります。<strong>（本体の成績には反映されません）</strong>
+            </p>
+
+            <div class="hero-actions">
+              <button id="startGameButton" class="primary-button" type="button">
+                このモードでスタート
+              </button>
+              <button id="openEncyclopediaButton" class="ghost-button" type="button">
+                図鑑を見る
+              </button>
+              <button id="toggleRankingButton" class="ghost-button" type="button">
+                スコアを表示
+              </button>
+            </div>
+
+            <div class="player-name-panel">
+              <label class="player-name-label" for="playerNameInput">ユーザー名</label>
+              <div class="player-name-row">
+                <input
+                  id="playerNameInput"
+                  class="player-name-input"
+                  type="text"
+                  maxlength="20"
+                  autocomplete="nickname"
+                  placeholder="ユーザー名を入力"
+                />
+                <button id="savePlayerNameButton" class="ghost-button" type="button">
+                  名前を保存
+                </button>
+              </div>
+              <p id="playerNameStatus" class="player-name-status">
+                未記入ならゲーム中は「プレイヤー」、スコアでは「No name」になります。
+              </p>
+            </div>
+
+          </article>
+
+          <aside class="title-side">
+            <div class="zumi-card">
+              <div id="titleImagePanel" class="title-visual-panel">
+                <div class="character-frame">
+                  <img
+                    id="titleZumiImage"
+                    src="./assets/images/title/default.png"
+                    alt="タイトルのずみちゃんイラスト"
+                  />
+                </div>
+              </div>
+                <div id="titleRankingPanel" class="title-visual-panel title-ranking-panel" hidden>
+                  <div class="panel-head title-ranking-head">
+                    <div class="title-ranking-title-row">
+                      <p class="eyebrow">Score</p>
+                      <div class="title-ranking-actions">
+                      <button id="cycleRankingFilterButton" class="ghost-button ranking-filter-button" type="button">
+                        モード別切替
+                      </button>
+                      <p id="rankingFilterStatus" class="ranking-filter-status">全モード表示</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="rankingList" class="ranking-list"></div>
+                </div>
+            </div>
+
+            <div class="difficulty-panel">
+              <div class="panel-head">
+                <p class="eyebrow">Difficulty Select</p>
+                <h2>難易度をえらぶ</h2>
+              </div>
+              <div id="difficultyCards" class="difficulty-cards"></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="encyclopediaScreen" class="screen encyclopedia-screen" aria-hidden="true">
+        <div class="encyclopedia-layout">
+          <div class="control-panel encyclopedia-header">
+            <p class="eyebrow">Encyclopedia</p>
+            <h1>おかしと料理の図鑑</h1>
+            <p class="description">
+              ボタンを押すと、お菓子やお料理についての短い説明が読めます。図鑑イラストではなく、ことばで楽しむコレクションです。
+            </p>
+            <div class="control-actions">
+              <button id="encyclopediaBackButton" class="ghost-button" type="button">
+                タイトルへ戻る
+              </button>
+            </div>
+          </div>
+
+          <div class="encyclopedia-shell">
+            <aside class="encyclopedia-sidebar">
+              <div class="typing-card">
+                <div class="panel-head">
+                  <p class="eyebrow">Difficulty</p>
+                  <h2>カテゴリー</h2>
+                </div>
+                <div id="encyclopediaFilters" class="encyclopedia-filters"></div>
+              </div>
+
+              <div class="typing-card encyclopedia-list-card">
+                <div class="panel-head">
+                  <p class="eyebrow">Words</p>
+                  <h2>ことば一覧</h2>
+                </div>
+                <div id="encyclopediaWordList" class="encyclopedia-word-list"></div>
+              </div>
+            </aside>
+
+            <section class="typing-card encyclopedia-detail">
+              <p class="card-label">説明</p>
+              <h2 id="encyclopediaWordTitle">プリン</h2>
+              <p id="encyclopediaWordMode" class="encyclopedia-word-mode">初級 / purin</p>
+              <p id="encyclopediaWordDescription" class="encyclopedia-word-description">
+                卵・牛乳・砂糖を使う定番スイーツです。日本ではカラメルソースつきが親しまれ、やさしい甘さとなめらかな口当たりが人気です。
+              </p>
+              <p class="encyclopedia-source-note">Wikipediaを参照させてもらいました。</p>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section id="playScreen" class="screen play-screen" aria-hidden="true">
+        <header class="play-header">
+          <div class="play-heading">
+            <button id="backToTitleButton" class="ghost-button" type="button">
+              タイトルへ戻る
+            </button>
+            <div>
+              <p id="playModeName" class="play-mode-name">初級</p>
+              <h2 id="playModeCopy">ぐぐががちゃんLikeなモード</h2>
+            </div>
+          </div>
+
+          <dl class="hud">
+            <div class="hud-chip">
+              <dt>のこり時間</dt>
+              <dd id="timeValue">1:00</dd>
+            </div>
+            <div class="hud-chip">
+              <dt>プレゼント数</dt>
+              <dd id="scoreValue">0</dd>
+            </div>
+            <div class="hud-chip">
+              <dt>ミス</dt>
+              <dd id="missValue">0</dd>
+            </div>
+            <div class="hud-chip">
+              <dt>COMBO</dt>
+              <dd id="comboValue">0</dd>
+            </div>
+          </dl>
+        </header>
+
+        <div class="play-layout">
+          <section class="character-panel zumi-stage">
+            <div class="character-stage-card">
+              <div class="character-stage-head">
+                <p id="playerStageName" class="stage-badge">プレイヤー</p>
+                <p id="zumiMoodBadge" class="character-mood-badge">考え中</p>
+              </div>
+              <div class="character-window zumi-window">
+                <img
+                  id="zumiPlayImage"
+                  src="./assets/images/variations/zumi_thinking.png"
+                  alt="ずみちゃんプレイ中画像"
+                />
+              </div>
+              <div class="stage-copy">
+                <p id="zumiPoseTitle" class="stage-mood-title">次のプレゼントを考え中</p>
+                <p id="zumiPoseCopy" class="stage-mood-copy">
+                  ぐぐががの様子を見ながら、次のひと品を考えています。
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section class="typing-panel">
+            <div class="typing-card current-word-card">
+              <p class="card-label">いまのお題</p>
+              <h3 id="currentWordDisplay">プリン</h3>
+              <p id="currentWordGuide" class="current-word-guide">purin</p>
+            </div>
+
+            <div class="typing-card input-card">
+              <label class="card-label" for="typingInput">ローマ字で入力</label>
+              <input
+                id="typingInput"
+                class="typing-input"
+                type="text"
+                inputmode="latin"
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+                placeholder="ここに入力"
+              />
+              <p id="typingHint" class="typing-hint">
+                正しいローマ字を入れると次のお題へ進みます。
+              </p>
+            </div>
+
+            <div class="typing-card progress-card" hidden>
+              <div class="progress-head">
+                <p class="card-label">いまの反応</p>
+                <p id="reactionBadge" class="reaction-badge">？</p>
+              </div>
+              <p id="reactionText" class="reaction-text">
+                まだきょとんとしながら、プレゼントを待っています。
+              </p>
+              <div class="progress-meter">
+                <span id="affectionFill" class="affection-fill"></span>
+              </div>
+            </div>
+          </section>
+
+          <section class="character-panel gugugaga-stage">
+            <div class="character-stage-card">
+              <div class="character-stage-head">
+                <p class="stage-badge">ぐぐがが</p>
+                <p id="gugugagaMoodBadge" class="character-mood-badge">きょとん</p>
+              </div>
+              <div class="character-window gugugaga-window">
+                <img
+                  id="gugugagaPlayImage"
+                  src="./assets/images/variations/gugugaga_curious.png"
+                  alt="ぐぐががプレイ中画像"
+                />
+              </div>
+              <div class="stage-copy">
+                <p id="gugugagaPoseTitle" class="stage-mood-title">きょとんとして待機中</p>
+                <p id="gugugagaPoseCopy" class="stage-mood-copy">
+                  何が届くかを気にしながら、こちらを見ています。
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <section class="play-stage-panel" aria-label="増殖ステージ">
+          <div class="play-stage-card">
+            <div class="play-stage-head">
+              <p class="card-label">ぐぐががちゃんが集まってくるよ！</p>
+              <p id="creatureStageStatus" class="play-stage-status">プレゼントを集めてぐぐががを増やそう</p>
+            </div>
+
+            <div class="play-stage-scene">
+              <div class="gift-pile-backdrop" aria-hidden="true">
+                <span class="gift-pile-box gift-a"></span>
+                <span class="gift-pile-box gift-b"></span>
+                <span class="gift-pile-box gift-c"></span>
+                <span class="gift-pile-box gift-d"></span>
+                <span class="gift-pile-box gift-e"></span>
+                <span class="gift-pile-box gift-f"></span>
+                <span class="gift-pile-box gift-g"></span>
+                <span class="gift-pile-box gift-h"></span>
+                <span class="gift-pile-box gift-i"></span>
+                <span class="gift-pile-box gift-j"></span>
+                <span class="gift-pile-box gift-k"></span>
+                <span class="gift-pile-box gift-l"></span>
+              </div>
+
+              <div id="creatureStageLane" class="creature-stage-lane"></div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section id="bonusScreen" class="screen bonus-screen" aria-hidden="true">
+        <div class="bonus-layout">
+          <div class="bonus-header">
+            <p class="eyebrow">Bonus Time</p>
+            <h1>ぐっ「がががががががががが！」</h1>
+            <p class="description">
+              5秒の演出のあと、15秒間だけ <strong>が / ga</strong> を連打できるボーナスタイムです。20個ごとに結果のイラストが変わります。（上限100）<br />
+              BGM： 愛(ぐぐがが)をつかみとれ！ / ～クリスタルキング「愛をとりもどせ」パロディ～
+            </p>
+          </div>
+
+          <div class="bonus-stage">
+            <div class="bonus-background-shell" aria-hidden="true">
+              <img
+                id="bonusBackgroundImage"
+                class="bonus-background-image"
+                src="./assets/images/bonus/0.png"
+                alt=""
+              />
+            </div>
+
+            <div id="bonusHud" class="bonus-hud">
+              <div class="bonus-chip">
+                <span>のこり時間</span>
+                <strong id="bonusTimeValue">15.0</strong>
+              </div>
+              <div class="bonus-chip">
+                <span>ボーナス数</span>
+                <strong id="bonusHitValue">0</strong>
+              </div>
+            </div>
+
+            <div class="bonus-center">
+              <div id="bonusPlayUi" class="bonus-play-ui">
+                <p id="bonusPromptLabel" class="bonus-prompt-label">Bonus Time</p>
+                <h2 id="bonusPrompt">が</h2>
+                <p id="bonusGuide" class="bonus-guide">`ga` または `が` で反応します</p>
+                <input
+                  id="bonusInput"
+                  class="typing-input bonus-input"
+                  type="text"
+                  inputmode="latin"
+                  autocomplete="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  placeholder="が / ga"
+                />
+              </div>
+            </div>
+
+            <div id="bonusRainLayer" class="bonus-rain-layer" aria-hidden="true"></div>
+
+            <img
+              id="bonusFinishImage"
+              class="bonus-finish-image"
+              src=""
+              alt="Finish!"
+            />
+
+            <div class="bonus-pile-shell" aria-hidden="true">
+              <p class="bonus-pile-label">降ってきたおやつ</p>
+              <div id="bonusPile" class="bonus-pile"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="resultScreen" class="screen result-screen" aria-hidden="true">
+        <div class="result-preview">
+          <div id="resultInfoPanel" class="control-panel result-info-panel">
+            <p class="eyebrow">Result</p>
+            <h1 id="resultSummaryTitle">リザルト</h1>
+            <p id="resultSummaryCopy" class="description">
+              プレイ結果に応じたリザルト画像を表示します。
+            </p>
+
+            <div class="control-actions">
+              <button id="retryButton" class="primary-button" type="button">
+                もう一度あそぶ
+              </button>
+              <button id="resultToTitleButton" class="ghost-button" type="button">
+                タイトルへ戻る
+              </button>
+            </div>
+          </div>
+
+          <section class="stage-shell">
+            <div id="resultStage" class="result-stage" data-scene="idle">
+              <div class="stage-background"></div>
+
+              <div id="idleCard" class="idle-card">
+                <p class="idle-tag">Standby</p>
+                <h2 id="idleResultName">リザルト待機中</h2>
+                <p id="idleResultSummary">
+                  カットインから始まるリザルト演出をここで表示します。
+                </p>
+              </div>
+
+              <img
+                id="cutinImage"
+                class="stage-image cutin-image"
+                src=""
+                alt="ずみちゃんのカットイン"
+              />
+
+              <img
+                id="resultImage"
+                class="stage-image result-image"
+                src=""
+                alt="リザルトイラスト"
+              />
+
+              <p id="cutinVariant" class="cutin-variant"></p>
+              <p id="congratulationsText" class="congratulations-text">Congratulations!</p>
+
+              <div id="resultAnnouncement" class="result-announcement">
+                <p class="announcement-label">Result</p>
+                <h2 id="resultTitle"></h2>
+                <p id="resultCaption" class="announcement-caption"></p>
+              </div>
+
+              <dl id="scoreCard" class="score-card">
+                <div class="score-row">
+                  <dt>プレゼント数</dt>
+                  <dd id="resultScoreValue"></dd>
+                </div>
+                <div class="score-row">
+                  <dt>目標</dt>
+                  <dd id="resultTargetValue"></dd>
+                </div>
+                <div class="score-row">
+                  <dt>ミス</dt>
+                  <dd id="resultMissValue"></dd>
+                </div>
+              </dl>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script src="./data/word-lists.js"></script>
+    <script src="./data/encyclopedia.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>
